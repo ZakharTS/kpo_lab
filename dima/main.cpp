@@ -15,5 +15,6 @@ int main() {
         if((sum + i) % n != 0) sol++;
     }
     cout << sol << endl;
+    //current branch - merge_conflict
     return 0;
 }
