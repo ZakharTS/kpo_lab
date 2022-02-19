@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int main() {
+void main() {
     int n, sum = 0, sol = 0;
     cin >> n;
     for (size_t i = 0; i < n; i++) {
@@ -15,5 +15,6 @@ int main() {
         if((sum + i) % n != 0) sol++;
     }
     cout << sol << endl;
+    //current branch - main
     return 0;
 }
