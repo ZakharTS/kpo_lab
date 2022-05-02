@@ -19,7 +19,7 @@ int main() {
                 return 1;
             }
 //            cout << brackets.top() << endl;
-            if ((input[i] - brackets.top()) <= 1) {
+            if ((input[i] - brackets.top()) <= 2) {
                 brackets.pop();
             } else {
                 cout << "Wrong bracket closing.\n";
