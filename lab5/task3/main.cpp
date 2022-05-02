@@ -27,6 +27,7 @@ int main() {
         }
         records.insert(make_pair(key(temp), value(temp)));
     }
+    cout << endl;
     for (map<string, string>::iterator itr = records.begin(); itr != records.end(); itr++) {
         cout << itr->first << " - " << itr->second << endl;
     }
