@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <climits>
 using namespace std;
 
 int main() {
@@ -26,5 +26,6 @@ int main() {
     for (int i = 0; i < 4; i++) {
         cout << maxs[i] << " ";
     }
+    cout << endl;
     return 0;
 }
