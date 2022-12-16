@@ -88,6 +88,35 @@ public class Database {
         return "";
     }
 
+    public static boolean isNeeded(String words[], DBRecord curRec) {
+        boolean isNeeded = true;
+        for (String cur : words) {
+            if (cur.indexOf("=") > -1) {
+                String[] wh = cur.split("=");
+                if ((wh[0].equals("id") && curRec.getId() != Integer.parseInt(wh[1])) ||
+                        (wh[0].equals("name") && !curRec.getName().equals(wh[1])) ||
+                        (wh[0].equals("age") && curRec.getAge() != Integer.parseInt(wh[1]))) {
+                    isNeeded = false;
+                }
+            } else if (cur.indexOf(">") > -1) {
+                String[] wh = cur.split(">");
+                if ((wh[0].equals("id") && curRec.getId() <= Integer.parseInt(wh[1])) ||
+                        (wh[0].equals("name") && curRec.getName().compareTo(wh[1]) <= 0) ||
+                        (wh[0].equals("age") && curRec.getAge() <= Integer.parseInt(wh[1]))) {
+                    isNeeded = false;
+                }
+            } else if (cur.indexOf("<") > -1) {
+                String[] wh = cur.split("<");
+                if ((wh[0].equals("id") && curRec.getId() >= Integer.parseInt(wh[1])) ||
+                        (wh[0].equals("name") && curRec.getName().compareTo(wh[1]) >= 0) ||
+                        (wh[0].equals("age") && curRec.getAge() >= Integer.parseInt(wh[1]))) {
+                    isNeeded = false;
+                }
+            }
+        }
+        return isNeeded;
+    }
+
     private String select(String command) {
         String output = new String("\n");
 //        command.replace("\'", "");
@@ -119,7 +148,7 @@ public class Database {
             } else if (words[i].equals("ORDER") && words[i + 1].equals("BY")) {
                 i += 2;
                 for (; i < words.length; i++) {
-                    orderby += words[i] + " ";
+                    orderby += words[i];
                 }
             }
         }
@@ -153,26 +182,17 @@ public class Database {
             }
         }
         output += "\n";
-        if (orderby.equals("id"))
-            Collections.sort(this.records, DBRecord.sortById);
         if (orderby.equals("name"))
             Collections.sort(this.records, DBRecord.sortByName);
         if (orderby.equals("age"))
             Collections.sort(this.records, DBRecord.sortByAge);
+        else
+            Collections.sort(this.records, DBRecord.sortById);
 
         for (DBRecord curRec : this.records) {
             if (!where.isEmpty()) {
-                words = where.split(",\\s*");
-                boolean isNeeded = true;
-                for (String cur : words) {
-                    String[] wh = cur.split("\\s*=\\s*");
-                    if ((wh[0].equals("id") && curRec.getId() != Integer.parseInt(wh[1])) ||
-                            (wh[0].equals("name") && !curRec.getName().equals(wh[1])) ||
-                            (wh[0].equals("age") && curRec.getAge() != Integer.parseInt(wh[1]))) {
-                        isNeeded = false;
-                    }
-                }
-                if (!isNeeded) continue;
+                words = where.split("\\s");
+                if (!isNeeded(words, curRec)) continue;
             }
             if (col0) {
                 output += Integer.toString(curRec.getId()) + "\t";
@@ -262,16 +282,7 @@ public class Database {
             DBRecord curRec = itr.next();
             if (!where.isEmpty()) {
                 words = where.split("\\s");
-                boolean toDelete = true;
-                for (String cur : words) {
-                    String[] wh = cur.split("=");
-                    if (!((wh[0].equals("id") && curRec.getId() == Integer.parseInt(wh[1])) ||
-                            (wh[0].equals("name") && curRec.getName().equals(wh[1])) ||
-                            (wh[0].equals("age") && curRec.getAge() == Integer.parseInt(wh[1])))) {
-                        toDelete = false;
-                    }
-                }
-                if (!toDelete) continue;
+                if (!isNeeded(words, curRec)) continue;
             }
             itr.remove();
         }
@@ -314,19 +325,8 @@ public class Database {
             Iterator<DBRecord> itr = this.records.iterator();
             while (itr.hasNext()) {
                 DBRecord curRec = itr.next();
-                if (!where.isEmpty()) {
-                    words = where.split("\\s");
-                    boolean toUpdate = true;
-                    for (String cur : words) {
-                        String[] wh = cur.split("=");
-                        if (!((wh[0].equals("id") && curRec.getId() == Integer.parseInt(wh[1])) ||
-                                (wh[0].equals("name") && curRec.getName().equals(wh[1])) ||
-                                (wh[0].equals("age") && curRec.getAge() == Integer.parseInt(wh[1])))) {
-                            toUpdate = false;
-                        }
-                    }
-                    if (!toUpdate) continue;
-                }
+                words = where.split("\\s");
+                if (!isNeeded(words, curRec)) continue;
                 words = set.split("\\s");
                 for (String cur : words) {
                     String[] wh = cur.split("=");
